@@ -249,35 +249,41 @@ const isLoggedIn = !!Astro.locals.user;
 			</div>
 		</footer>
 
-		<script>
-			// Mobile search toggle
-			const searchWrapper = document.querySelector<HTMLElement>(".search-wrapper");
-			const searchToggle = document.querySelector<HTMLButtonElement>(".search-toggle");
-			const searchInput = document.querySelector<HTMLInputElement>(".site-search-input");
+		<script is:inline>
+			// Mobile search toggle (JS puro, no TS)
+			(function () {
+				var searchWrapper = document.querySelector(".search-wrapper");
+				var searchToggle = document.querySelector(".search-toggle");
+				var searchInput = document.querySelector(".site-search-input");
 
-			searchToggle?.addEventListener("click", () => {
-				searchWrapper?.classList.add("is-open");
-				searchToggle.setAttribute("aria-expanded", "true");
-				setTimeout(() => searchInput?.focus(), 50);
-			});
+				if (!searchWrapper || !searchToggle || !searchInput) return;
 
-			searchInput?.addEventListener("blur", () => {
-				setTimeout(() => {
-					if (searchInput && !searchInput.value) {
-						searchWrapper?.classList.remove("is-open");
-						searchToggle?.setAttribute("aria-expanded", "false");
+				searchToggle.addEventListener("click", function () {
+					searchWrapper.classList.add("is-open");
+					searchToggle.setAttribute("aria-expanded", "true");
+					setTimeout(function () {
+						searchInput.focus();
+					}, 50);
+				});
+
+				searchInput.addEventListener("blur", function () {
+					setTimeout(function () {
+						if (!searchInput.value) {
+							searchWrapper.classList.remove("is-open");
+							searchToggle.setAttribute("aria-expanded", "false");
+						}
+					}, 200);
+				});
+
+				searchInput.addEventListener("keydown", function (e) {
+					if (e.key === "Escape") {
+						searchInput.value = "";
+						searchInput.blur();
+						searchWrapper.classList.remove("is-open");
+						searchToggle.setAttribute("aria-expanded", "false");
 					}
-				}, 200);
-			});
-
-			searchInput?.addEventListener("keydown", (e) => {
-				if (e.key === "Escape") {
-					searchInput.value = "";
-					searchInput.blur();
-					searchWrapper?.classList.remove("is-open");
-					searchToggle?.setAttribute("aria-expanded", "false");
-				}
-			});
+				});
+			})();
 		</script>
 
 		<script>
