@@ -1066,15 +1066,19 @@ const isLoggedIn = !!Astro.locals.user;
 			}
 
 			.search-wrapper.is-open {
-				position: absolute;
-				left: var(--spacing-4);
-				right: var(--spacing-4);
-				top: 50%;
-				transform: translateY(-50%);
-				z-index: 10;
-				background: var(--color-bg);
-			}
-
+					position: absolute;
+					left: 0;
+					right: 0;
+					top: 0;
+					bottom: 0;
+					margin: 0;
+					transform: none;
+					z-index: 10;
+					background: var(--color-bg);
+					padding: var(--spacing-3) var(--spacing-4);
+					display: flex;
+					align-items: center;
+				}
 			.search-wrapper.is-open .site-search {
 				display: block !important;
 			}
