@@ -1144,11 +1144,16 @@ const isLoggedIn = !!Astro.locals.user;
 				/* Mobile menu overlay (fullscreen) */
 			.mobile-menu-overlay {
 					position: fixed !important;
-					inset: 0 !important;
+					top: 0 !important;
+					right: 0 !important;
+					bottom: 0 !important;
+					left: 0 !important;
+					width: 100vw !important;
+					height: 100vh !important;
 					z-index: 1000;
 					background-color: #ffffff !important;
 					display: flex !important;
-					flex-direction: column;
+					flex-direction: column !important;
 					padding: var(--spacing-6);
 					opacity: 0;
 					visibility: hidden;
