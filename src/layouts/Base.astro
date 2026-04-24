@@ -1083,12 +1083,19 @@ const isLoggedIn = !!Astro.locals.user;
 				display: block !important;
 			}
 
-			.search-wrapper.is-open :global(.site-search-input) {
-				display: block !important;
-				width: 100% !important;
-				padding: var(--spacing-2) var(--spacing-3) !important;
-				font-size: var(--font-size-sm) !important;
-			}
+			.search-wrapper.is-open :global(.site-search) {
+					display: block !important;
+					width: 100% !important;
+					flex: 1 1 auto !important;
+				}
+
+				.search-wrapper.is-open :global(.site-search-input) {
+					display: block !important;
+					width: 100% !important;
+					max-width: none !important;
+					padding: var(--spacing-2) var(--spacing-3) !important;
+					font-size: var(--font-size-sm) !important;
+				}
 				.nav-links {
 					order: 1;
 					width: 100%;
