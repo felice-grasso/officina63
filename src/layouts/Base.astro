@@ -106,7 +106,7 @@ const isLoggedIn = !!Astro.locals.user;
 					}
 				</a>
 				<div class="nav-right">
-					<div class="search-wrapper">
+				<div class="search-wrapper">
 					<button
 						type="button"
 						class="search-toggle"
@@ -134,26 +134,73 @@ const isLoggedIn = !!Astro.locals.user;
 						resultsClass="site-search-results"
 						resultClass="site-search-result"
 						collections={["posts", "pages"]}
-					 />
-				       </div>
-                      </div>
-					<div class="nav-links">
-						{
-							menu?.items.map((item) => (
-								<a href={item.url} target={item.target}>
-									{item.label}
-								</a>
-							))
-						}
-					</div>
+					/>
+				</div>
+				<div class="nav-links">
 					{
-						isLoggedIn && (
-							<a href="/_emdash/admin" class="nav-admin">
-								Admin
+						menu?.items.map((item) => (
+							<a href={item.url} target={item.target}>
+								{item.label}
 							</a>
-						)
+						))
 					}
 				</div>
+				{
+					isLoggedIn && (
+						<a href="/_emdash/admin" class="nav-admin">
+							Admin
+						</a>
+					)
+				}
+				<button
+					type="button"
+					class="menu-toggle"
+					aria-label="Open menu"
+					aria-expanded="false"
+				>
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<line x1="3" y1="6" x2="21" y2="6"></line>
+						<line x1="3" y1="12" x2="21" y2="12"></line>
+						<line x1="3" y1="18" x2="21" y2="18"></line>
+					</svg>
+				</button>
+			</div>
+
+		<div class="mobile-menu-overlay" aria-hidden="true">
+			<button type="button" class="mobile-menu-close" aria-label="Close menu">
+				<svg
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<line x1="18" y1="6" x2="6" y2="18"></line>
+					<line x1="6" y1="6" x2="18" y2="18"></line>
+				</svg>
+			</button>
+			<nav class="mobile-menu-nav">
+				{
+					menu?.items.map((item) => (
+						<a href={item.url} target={item.target} class="mobile-menu-link">
+							{item.label}
+						</a>
+					))
+				}
+			</nav>
+		</div>
 			</nav>
 		</header>
 
