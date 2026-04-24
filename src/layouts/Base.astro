@@ -1142,12 +1142,12 @@ const isLoggedIn = !!Astro.locals.user;
 				}
 
 				/* Mobile menu overlay (fullscreen) */
-				.mobile-menu-overlay {
-					position: fixed;
-					inset: 0;
+			.mobile-menu-overlay {
+					position: fixed !important;
+					inset: 0 !important;
 					z-index: 1000;
-					background: var(--color-bg);
-					display: flex;
+					background: var(--color-bg) !important;
+					display: flex !important;
 					flex-direction: column;
 					padding: var(--spacing-6);
 					opacity: 0;
@@ -1157,6 +1157,7 @@ const isLoggedIn = !!Astro.locals.user;
 						opacity var(--transition-base),
 						transform var(--transition-base),
 						visibility var(--transition-base);
+					overflow-y: auto;
 				}
 
 				.mobile-menu-overlay.is-open {
