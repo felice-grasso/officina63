@@ -1097,9 +1097,106 @@ const isLoggedIn = !!Astro.locals.user;
 				.nav-admin {
 					order: 2;
 					position: absolute;
-					right: var(--spacing-4);
+					right: calc(var(--spacing-4) + 44px);
 					top: var(--spacing-3);
 					font-size: var(--font-size-xs);
+				}
+
+				/* Hide nav-links bar: menu goes into the overlay on mobile */
+				.nav-links {
+					display: none !important;
+				}
+
+				/* Show hamburger */
+				.menu-toggle {
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					width: 36px;
+					height: 36px;
+					padding: 0;
+					background: transparent;
+					border: none;
+					color: var(--color-text);
+					cursor: pointer;
+					border-radius: var(--radius);
+					order: 3;
+				}
+
+				.menu-toggle:hover,
+				.menu-toggle:focus-visible {
+					background: var(--color-surface);
+					outline: none;
+				}
+
+				/* Mobile menu overlay (fullscreen) */
+				.mobile-menu-overlay {
+					position: fixed;
+					inset: 0;
+					z-index: 1000;
+					background: var(--color-bg);
+					display: flex;
+					flex-direction: column;
+					padding: var(--spacing-6);
+					opacity: 0;
+					visibility: hidden;
+					transform: translateY(-10px);
+					transition:
+						opacity var(--transition-base),
+						transform var(--transition-base),
+						visibility var(--transition-base);
+				}
+
+				.mobile-menu-overlay.is-open {
+					opacity: 1;
+					visibility: visible;
+					transform: translateY(0);
+				}
+
+				.mobile-menu-close {
+					align-self: flex-end;
+					width: 44px;
+					height: 44px;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					background: transparent;
+					border: none;
+					color: var(--color-text);
+					cursor: pointer;
+					border-radius: var(--radius);
+					margin-bottom: var(--spacing-6);
+				}
+
+				.mobile-menu-close:hover,
+				.mobile-menu-close:focus-visible {
+					background: var(--color-surface);
+					outline: none;
+				}
+
+				.mobile-menu-nav {
+					display: flex;
+					flex-direction: column;
+					gap: var(--spacing-4);
+				}
+
+				.mobile-menu-link {
+					font-size: var(--font-size-2xl);
+					font-weight: 500;
+					color: var(--color-text);
+					text-decoration: none;
+					padding: var(--spacing-2) 0;
+					border-bottom: 1px solid var(--color-border-subtle);
+					transition: color var(--transition-fast);
+				}
+
+				.mobile-menu-link:hover {
+					color: var(--color-accent);
+				}
+
+				/* Lock body scroll when overlay open */
+				body.menu-open {
+					overflow: hidden;
 				}
 
 				.footer-grid {
