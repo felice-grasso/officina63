@@ -15,7 +15,7 @@
 	"r2_buckets": [
 		{
 			"binding": "MEDIA",
-			"bucket_name": "my-emdash-media","preview_bucket_name": "my-emdash-media",
+			"bucket_name": "my-emdash-data","preview_bucket_name": "my-emdash-data",
 		},
 	],
 	// Worker Loader for plugin sandboxing
