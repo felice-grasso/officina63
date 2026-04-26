@@ -52,7 +52,7 @@ const gridPostsWithTags = await Promise.all(
 // Format date helper
 function formatDate(date: Date | null | undefined) {
 	if (!date) return null;
-	return date.toLocaleDateString("en-US", {
+	return date.toLocaleDateString("it-IT", {
 		year: "numeric",
 		month: "long",
 		day: "numeric",
@@ -117,7 +117,7 @@ function formatDate(date: Date | null | undefined) {
 									)}
 									<span class="meta-dot" />
 									<span>
-										{getReadingTime(featuredPost.data.content)} min read
+										{getReadingTime(featuredPost.data.content)} min di lettura
 									</span>
 								</div>
 								<a
