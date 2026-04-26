@@ -131,7 +131,7 @@ const publishDate =
 						bylines.length > 0 && (
 							<div class="meta-block byline-block">
 								<span class="meta-label">
-									{bylines.length === 1 ? "Author" : "Authors"}
+									{bylines.length === 1 ? "Autore" : "Autori"}
 								</span>
 								<div class="bylines">
 									{bylines.map((credit) => (
@@ -160,13 +160,13 @@ const publishDate =
 					{
 						publishDate && (
 							<div class="meta-block">
-								<span class="meta-label">Published</span>
+								<span class="meta-label">Pubblicato</span>
 								<time class="meta-value">{publishDate}</time>
 							</div>
 						)
 					}
 					<div class="meta-block">
-						<span class="meta-label">Reading time</span>
+						<span class="meta-label">Tempo di lettura</span>
 						<span class="meta-value">{readingTime} min</span>
 					</div>
 					{
@@ -254,7 +254,7 @@ const publishDate =
 		otherPostsWithTags.length > 0 && (
 			<section class="more-posts">
 				<div class="more-inner">
-					<h2 class="more-title">Continue reading</h2>
+					<h2 class="more-title">Continua a leggere</h2>
 					<div class="more-grid">
 						{otherPostsWithTags.map(
 							({ post: p, tags: postTags, bylines: postBylines }) => (
