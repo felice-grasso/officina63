@@ -23,26 +23,26 @@ const postsWithTags = await Promise.all(
 );
 
 const formatDate = (date: Date) =>
-	date.toLocaleDateString("en-US", {
+	date.toLocaleDateString("it-IT", {
 		year: "numeric",
 		month: "long",
 		day: "numeric",
 	});
 ---
 
-<Base title="All Posts" description="Browse all blog posts">
+<Base title="Tutti i post" description="Sfoglia tutti i post">
 	<div class="posts-page">
 		<header class="page-header">
-			<h1 class="page-title">All Posts</h1>
+			<h1 class="page-title">Tutti gli articoli</h1>
 			<p class="page-description">
 				{posts.length}
-				{posts.length === 1 ? "article" : "articles"}
+				{posts.length === 1 ? "articolo" : "articoli"}
 			</p>
 		</header>
 
 		{
 			sortedPosts.length === 0 ? (
-				<p class="empty">No posts yet.</p>
+				<p class="empty">Nessun articolo ancora pubblicato.</p>
 			) : (
 				<div class="posts-list">
 					{postsWithTags.map(({ post, tags, bylines }) => (
@@ -80,7 +80,7 @@ const formatDate = (date: Date) =>
 										<time>{formatDate(post.data.publishedAt)}</time>
 									)}
 									{post.data.publishedAt && <span class="meta-dot" />}
-									<span>{getReadingTime(post.data.content)} min read</span>
+									<span>{getReadingTime(post.data.content)} min di lettura</span>
 								</div>
 								<h2 class="post-title">{post.data.title}</h2>
 								{post.data.excerpt && (
