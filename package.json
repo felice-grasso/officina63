@@ -16,7 +16,6 @@
 		"@astrojs/cloudflare": "^13.1.7",
 		"@astrojs/react": "^5.0.0",
 		"@emdash-cms/cloudflare": "^0.7.0",
-		"@emdash-cms/plugin-forms": "^0.1.1",
 		"@emdash-cms/plugin-webhook-notifier": "^0.1.2",
 		"@tiptap/extension-collaboration": "^3.22.4",
 		"@tiptap/y-tiptap": "^3.0.3",
