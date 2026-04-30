@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { EmailMessage } from "cloudflare:email";
+import { env } from "cloudflare:workers";
 
 export const prerender = false;
 
@@ -29,7 +30,6 @@ function isValidEmail(email: string): boolean {
 }
 
 function encodeUtf8Subject(s: string): string {
-  // Encode subject in MIME B-encoding for UTF-8 (handles accents/emoji safely)
   const utf8Bytes = new TextEncoder().encode(s);
   let binary = "";
   for (const b of utf8Bytes) binary += String.fromCharCode(b);
@@ -76,13 +76,13 @@ function buildMimeMessage(opts: {
   return [...headers, ...body].join("\r\n");
 }
 
-export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
-  const env = (locals as any).runtime?.env as {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
+  const e = env as unknown as {
     DB: D1Database;
     SEND_EMAIL: SendEmail;
   };
 
-  if (!env?.DB || !env?.SEND_EMAIL) {
+  if (!e?.DB || !e?.SEND_EMAIL) {
     return new Response(JSON.stringify({ ok: false, error: "Bindings non disponibili" }), {
       status: 500, headers: { "Content-Type": "application/json" },
     });
@@ -120,7 +120,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
 
   let contactId: number | null = null;
   try {
-    const result = await env.DB.prepare(
+    const result = await e.DB.prepare(
       "INSERT INTO contacts (nome, email, telefono, messaggio, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?)"
     ).bind(nome, email, telefono || null, messaggio, ip, userAgent).run();
     contactId = result.meta.last_row_id ?? null;
@@ -147,7 +147,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
       html: ownerHtml,
     });
 
-    await env.SEND_EMAIL.send(new EmailMessage(FROM_EMAIL, OWNER_EMAIL, rawOwner));
+    await e.SEND_EMAIL.send(new EmailMessage(FROM_EMAIL, OWNER_EMAIL, rawOwner));
   } catch (err) {
     console.error("Errore invio email titolare:", err);
   }
@@ -168,7 +168,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
       html: userHtml,
     });
 
-    await env.SEND_EMAIL.send(new EmailMessage(FROM_EMAIL, email, rawUser));
+    await e.SEND_EMAIL.send(new EmailMessage(FROM_EMAIL, email, rawUser));
   } catch (err) {
     console.error("Errore invio conferma cliente:", err);
   }
