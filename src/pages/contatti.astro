@@ -1,0 +1,335 @@
+---
+import Base from "../layouts/Base.astro";
+import { getSiteSettings } from "emdash";
+import { resolveBlogSiteIdentity } from "../utils/site-identity";
+
+const { siteTitle } = resolveBlogSiteIdentity(await getSiteSettings());
+const pageTitle = `Contatti — ${siteTitle}`;
+const pageDescription =
+	"Contatta Pixxel.media — Officina di stampa e comunicazione visiva ad Ariano Irpino. Stampa, grafica, comunicazione visiva.";
+---
+
+<Base title={pageTitle} description={pageDescription}>
+	<div class="contatti-content">
+		<header class="contatti-header">
+			<h1 class="contatti-title">Contatti</h1>
+			<p class="contatti-subtitle">
+				Raccontaci il tuo progetto — ti rispondiamo entro 24 ore lavorative.
+			</p>
+		</header>
+
+		<div class="contatti-grid">
+			{/* Colonna info statiche */}
+			<aside class="contatti-info">
+				<h2 class="info-title">Pixxel.media</h2>
+				<p class="info-tagline">Officina di stampa e comunicazione visiva</p>
+
+				<dl class="info-list">
+					<div class="info-row">
+						<dt>Indirizzo</dt>
+						<dd>
+							Via Nazionale Santa Barbara, 87<br />
+							83031 Ariano Irpino (AV)
+						</dd>
+					</div>
+
+					<div class="info-row">
+						<dt>Telefono</dt>
+						<dd>
+							<a href="tel:+390825891796">0825 891796</a>
+						</dd>
+					</div>
+
+					<div class="info-row">
+						<dt>Email</dt>
+						<dd>
+							<a href="mailto:info@pixxel.media">info@pixxel.media</a>
+						</dd>
+					</div>
+				</dl>
+			</aside>
+
+			{/* Colonna form */}
+			<section class="contatti-form-wrapper">
+				<form id="contact-form" class="contact-form" novalidate>
+					<div class="field">
+						<label for="nome">Nome e cognome <span class="req">*</span></label>
+						<input
+							id="nome"
+							name="nome"
+							type="text"
+							required
+							minlength="2"
+							maxlength="100"
+							autocomplete="name"
+						/>
+					</div>
+
+					<div class="field-row">
+						<div class="field">
+							<label for="email">Email <span class="req">*</span></label>
+							<input
+								id="email"
+								name="email"
+								type="email"
+								required
+								autocomplete="email"
+							/>
+						</div>
+
+						<div class="field">
+							<label for="telefono">Telefono</label>
+							<input
+								id="telefono"
+								name="telefono"
+								type="tel"
+								autocomplete="tel"
+								maxlength="30"
+							/>
+						</div>
+					</div>
+
+					<div class="field">
+						<label for="messaggio">La tua richiesta <span class="req">*</span></label>
+						<textarea
+							id="messaggio"
+							name="messaggio"
+							required
+							minlength="10"
+							maxlength="5000"
+							rows="7"
+							placeholder="Descrivici cosa ti serve: tipo di lavoro, quantità, scadenze, dettagli…"
+						></textarea>
+					</div>
+
+					<div class="form-footer">
+						<button type="submit" class="btn-submit">
+							<span class="btn-label">Invia richiesta</span>
+							<span class="btn-loading" hidden>Invio in corso…</span>
+						</button>
+						<p class="privacy-note">
+							Inviando il form acconsenti al trattamento dei tuoi dati per essere ricontattato.
+						</p>
+					</div>
+
+					<div id="form-feedback" class="form-feedback" hidden></div>
+				</form>
+			</section>
+		</div>
+	</div>
+</Base>
+
+<script>
+	const form = document.getElementById("contact-form") as HTMLFormElement | null;
+	const feedback = document.getElementById("form-feedback");
+	const submitBtn = form?.querySelector(".btn-submit") as HTMLButtonElement | null;
+	const btnLabel = submitBtn?.querySelector(".btn-label") as HTMLElement | null;
+	const btnLoading = submitBtn?.querySelector(".btn-loading") as HTMLElement | null;
+
+	function showFeedback(type: "success" | "error", message: string) {
+		if (!feedback) return;
+		feedback.hidden = false;
+		feedback.className = `form-feedback ${type}`;
+		feedback.textContent = message;
+		feedback.scrollIntoView({ behavior: "smooth", block: "center" });
+	}
+
+	function setLoading(loading: boolean) {
+		if (!submitBtn || !btnLabel || !btnLoading) return;
+		submitBtn.disabled = loading;
+		btnLabel.hidden = loading;
+		btnLoading.hidden = !loading;
+	}
+
+	form?.addEventListener("submit", async (e) => {
+		e.preventDefault();
+		if (!form) return;
+
+		if (feedback) feedback.hidden = true;
+
+		// Validazione HTML5
+		if (!form.checkValidity()) {
+			form.reportValidity();
+			return;
+		}
+
+		const data = {
+			nome: (form.elements.namedItem("nome") as HTMLInputElement).value,
+			email: (form.elements.namedItem("email") as HTMLInputElement).value,
+			telefono: (form.elements.namedItem("telefono") as HTMLInputElement).value,
+			messaggio: (form.elements.namedItem("messaggio") as HTMLTextAreaElement).value,
+		};
+
+		setLoading(true);
+
+		try {
+			const res = await fetch("/api/contact", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(data),
+			});
+
+			const json = (await res.json().catch(() => ({}))) as {
+				ok?: boolean;
+				error?: string;
+			};
+
+			if (res.ok && json.ok) {
+				showFeedback(
+					"success",
+					"Grazie! Abbiamo ricevuto la tua richiesta. Ti risponderemo al più presto."
+				);
+				form.reset();
+			} else {
+				showFeedback(
+					"error",
+					json.error ||
+						"Si è verificato un errore durante l'invio. Riprova o scrivici direttamente a info@pixxel.media."
+				);
+			}
+		} catch {
+			showFeedback(
+				"error",
+				"Connessione assente o errore di rete. Riprova tra qualche istante."
+			);
+		} finally {
+			setLoading(false);
+		}
+	});
+</script>
+
+<style>
+	.contatti-content {
+		max-width: var(--wide-width);
+		margin: 0 auto;
+		padding: var(--spacing-16) var(--spacing-6);
+	}
+
+	.contatti-header {
+		margin-bottom: var(--spacing-12);
+		padding-bottom: var(--spacing-6);
+		border-bottom: 1px solid var(--color-border-subtle);
+	}
+
+	.contatti-title {
+		font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl));
+		font-weight: 700;
+		line-height: var(--leading-tight);
+		letter-spacing: var(--tracking-tight);
+		margin-bottom: var(--spacing-3);
+	}
+
+	.contatti-subtitle {
+		font-size: var(--font-size-lg);
+		color: var(--color-text-secondary);
+		line-height: var(--leading-relaxed);
+		max-width: 60ch;
+	}
+
+	.contatti-grid {
+		display: grid;
+		grid-template-columns: 1fr 2fr;
+		gap: var(--spacing-12);
+		align-items: start;
+	}
+
+	/* === Colonna info === */
+	.contatti-info {
+		position: sticky;
+		top: var(--spacing-8);
+	}
+
+	.info-title {
+		font-size: var(--font-size-xl);
+		font-weight: 700;
+		margin-bottom: var(--spacing-1);
+	}
+
+	.info-tagline {
+		font-size: var(--font-size-sm);
+		color: var(--color-muted);
+		margin-bottom: var(--spacing-8);
+	}
+
+	.info-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-6);
+		margin: 0;
+	}
+
+	.info-row dt {
+		font-size: var(--font-size-xs);
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-wider);
+		color: var(--color-muted);
+		margin-bottom: var(--spacing-2);
+	}
+
+	.info-row dd {
+		font-size: var(--font-size-base);
+		line-height: var(--leading-relaxed);
+		color: var(--color-text);
+		margin: 0;
+	}
+
+	.info-row a {
+		color: var(--color-text);
+		text-decoration: none;
+		border-bottom: 1px solid var(--color-border);
+		transition: color var(--transition-fast), border-color var(--transition-fast);
+	}
+
+	.info-row a:hover {
+		color: var(--color-accent);
+		border-bottom-color: var(--color-accent);
+	}
+
+	/* === Colonna form === */
+	.contact-form {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-5);
+	}
+
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-2);
+	}
+
+	.field-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--spacing-5);
+	}
+
+	.field label {
+		font-size: var(--font-size-sm);
+		font-weight: 500;
+		color: var(--color-text);
+	}
+
+	.req {
+		color: var(--color-accent);
+	}
+
+	.field input,
+	.field textarea {
+		font-family: inherit;
+		font-size: var(--font-size-base);
+		line-height: var(--leading-normal);
+		color: var(--color-text);
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+		padding: var(--spacing-3) var(--spacing-4);
+		transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+	}
+
+	.field input:focus,
+	.field textarea:focus {
+		outline: none;
+		border-color: var(--color-accent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-acce
