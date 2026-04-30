@@ -24,4 +24,9 @@
 			"binding": "LOADER",
 		},
 	],
+        "send_email": [
+               {
+        "name": "SEND_EMAIL"
+               }
+        ]
 }
