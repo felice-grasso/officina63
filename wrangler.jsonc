@@ -4,6 +4,9 @@
 	"main": "./src/worker.ts",
 	"compatibility_date": "2026-02-24",
 	"compatibility_flags": ["nodejs_compat"],
+	"vars": {
+   	 "TURNSTILE_SITE_KEY": "0x4AAAAAADG0VrmKNiTd8fuk"
+	},
 	"d1_databases": [
 		{
 			"binding": "DB",
