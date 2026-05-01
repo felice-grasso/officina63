@@ -2,6 +2,7 @@
 import Base from "../layouts/Base.astro";
 import { getSiteSettings } from "emdash";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
+import { env } from "cloudflare:workers";
 
 const { siteTitle } = resolveBlogSiteIdentity(await getSiteSettings());
 const pageTitle = `Contatti — ${siteTitle}`;
@@ -9,8 +10,8 @@ const pageDescription =
 	"Contatta Pixxel.media — Officina di stampa e comunicazione visiva ad Ariano Irpino. Stampa, grafica, comunicazione visiva.";
 
 // Site key di Turnstile — letta dalla variabile d'ambiente Cloudflare
-const env = (Astro.locals as any).runtime?.env as { TURNSTILE_SITE_KEY?: string } | undefined;
-const turnstileSiteKey = env?.TURNSTILE_SITE_KEY ?? "";
+const cfEnv = env as unknown as { TURNSTILE_SITE_KEY?: string };
+const turnstileSiteKey = cfEnv?.TURNSTILE_SITE_KEY ?? "";
 ---
 
 <Base title={pageTitle} description={pageDescription}>
