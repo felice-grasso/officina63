@@ -24,8 +24,8 @@
 	--color-border: #e5e5e5;
 	--color-border-subtle: #f0f0f0;
 	--color-surface: #f7f7f7;
-	--color-accent: #0066cc;
-	--color-accent-hover: #0052a3;
+	--color-accent: #cc5500;
+	--color-accent-hover: #a34400;
 	--color-on-accent: white;
 	--color-accent-ring: color-mix(in srgb, var(--color-accent) 25%, transparent);
 	*/
