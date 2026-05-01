@@ -7,6 +7,10 @@ const { siteTitle } = resolveBlogSiteIdentity(await getSiteSettings());
 const pageTitle = `Contatti — ${siteTitle}`;
 const pageDescription =
 	"Contatta Pixxel.media — Officina di stampa e comunicazione visiva ad Ariano Irpino. Stampa, grafica, comunicazione visiva.";
+
+// Site key di Turnstile — letta dalla variabile d'ambiente Cloudflare
+const env = (Astro.locals as any).runtime?.env as { TURNSTILE_SITE_KEY?: string } | undefined;
+const turnstileSiteKey = env?.TURNSTILE_SITE_KEY ?? "";
 ---
 
 <Base title={pageTitle} description={pageDescription}>
@@ -100,6 +104,17 @@ const pageDescription =
 						></textarea>
 					</div>
 
+					{turnstileSiteKey && (
+						<div class="field turnstile-field">
+							<div
+								class="cf-turnstile"
+								data-sitekey={turnstileSiteKey}
+								data-theme="auto"
+								data-size="flexible"
+							></div>
+						</div>
+					)}
+
 					<div class="form-footer">
 						<button type="submit" class="btn-submit">
 							<span class="btn-label">Invia richiesta</span>
@@ -107,6 +122,7 @@ const pageDescription =
 						</button>
 						<p class="privacy-note">
 							Inviando il form acconsenti al trattamento dei tuoi dati per essere ricontattato.
+							Questo sito è protetto da Cloudflare Turnstile.
 						</p>
 					</div>
 
@@ -115,6 +131,15 @@ const pageDescription =
 			</section>
 		</div>
 	</div>
+
+	{turnstileSiteKey && (
+		<script
+			src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+			async
+			defer
+			is:inline
+		></script>
+	)}
 </Base>
 
 <script>
@@ -139,6 +164,13 @@ const pageDescription =
 		btnLoading.hidden = !loading;
 	}
 
+	function getTurnstileToken(): string {
+		const widget = document.querySelector<HTMLInputElement>(
+			'input[name="cf-turnstile-response"]'
+		);
+		return widget?.value || "";
+	}
+
 	form?.addEventListener("submit", async (e) => {
 		e.preventDefault();
 		if (!form) return;
@@ -150,11 +182,21 @@ const pageDescription =
 			return;
 		}
 
+		const turnstileToken = getTurnstileToken();
+		if (!turnstileToken) {
+			showFeedback(
+				"error",
+				"Verifica anti-spam non completata. Attendi qualche secondo e riprova."
+			);
+			return;
+		}
+
 		const data = {
 			nome: (form.elements.namedItem("nome") as HTMLInputElement).value,
 			email: (form.elements.namedItem("email") as HTMLInputElement).value,
 			telefono: (form.elements.namedItem("telefono") as HTMLInputElement).value,
 			messaggio: (form.elements.namedItem("messaggio") as HTMLTextAreaElement).value,
+			turnstileToken,
 		};
 
 		setLoading(true);
@@ -177,18 +219,28 @@ const pageDescription =
 					"Grazie! Abbiamo ricevuto la tua richiesta. Ti risponderemo al più presto."
 				);
 				form.reset();
+				// Reset Turnstile widget
+				if ((window as any).turnstile) {
+					(window as any).turnstile.reset();
+				}
 			} else {
 				showFeedback(
 					"error",
 					json.error ||
 						"Si è verificato un errore durante l'invio. Riprova o scrivici direttamente a info@pixxel.media."
 				);
+				if ((window as any).turnstile) {
+					(window as any).turnstile.reset();
+				}
 			}
 		} catch {
 			showFeedback(
 				"error",
 				"Connessione assente o errore di rete. Riprova tra qualche istante."
 			);
+			if ((window as any).turnstile) {
+				(window as any).turnstile.reset();
+			}
 		} finally {
 			setLoading(false);
 		}
@@ -196,7 +248,6 @@ const pageDescription =
 </script>
 
 <style>
-	/* === Layout base mobile-first === */
 	.contatti-content {
 		max-width: var(--wide-width);
 		margin: 0 auto;
@@ -224,7 +275,6 @@ const pageDescription =
 		max-width: 60ch;
 	}
 
-	/* Default: 1 colonna su mobile */
 	.contatti-grid {
 		display: grid;
 		grid-template-columns: 1fr;
@@ -232,7 +282,6 @@ const pageDescription =
 		align-items: start;
 	}
 
-	/* === Colonna info === */
 	.contatti-info {
 		position: static;
 	}
@@ -284,7 +333,6 @@ const pageDescription =
 		border-bottom-color: var(--color-accent);
 	}
 
-	/* === Colonna form === */
 	.contact-form {
 		display: flex;
 		flex-direction: column;
@@ -297,7 +345,6 @@ const pageDescription =
 		gap: var(--spacing-2);
 	}
 
-	/* Default: 1 colonna su mobile per email + telefono */
 	.field-row {
 		display: grid;
 		grid-template-columns: 1fr;
@@ -317,7 +364,7 @@ const pageDescription =
 	.field input,
 	.field textarea {
 		font-family: inherit;
-		font-size: 16px; /* iOS evita zoom automatico se >= 16px */
+		font-size: 16px;
 		line-height: var(--leading-normal);
 		color: var(--color-text);
 		background: var(--color-surface);
@@ -339,6 +386,10 @@ const pageDescription =
 	.field textarea {
 		resize: vertical;
 		min-height: 160px;
+	}
+
+	.turnstile-field {
+		min-height: 65px;
 	}
 
 	.form-footer {
@@ -382,7 +433,6 @@ const pageDescription =
 		margin: 0;
 	}
 
-	/* === Feedback === */
 	.form-feedback {
 		padding: var(--spacing-4);
 		border-radius: var(--radius);
@@ -403,7 +453,6 @@ const pageDescription =
 		border: 1px solid color-mix(in srgb, #dc2626 30%, transparent);
 	}
 
-	/* === Desktop / Tablet largo === */
 	@media (min-width: 901px) {
 		.contatti-content {
 			padding: var(--spacing-16) var(--spacing-6);
