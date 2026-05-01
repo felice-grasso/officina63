@@ -19,7 +19,6 @@ const pageDescription =
 		</header>
 
 		<div class="contatti-grid">
-			{/* Colonna info statiche */}
 			<aside class="contatti-info">
 				<h2 class="info-title">Pixxel.media</h2>
 				<p class="info-tagline">Officina di stampa e comunicazione visiva</p>
@@ -49,7 +48,6 @@ const pageDescription =
 				</dl>
 			</aside>
 
-			{/* Colonna form */}
 			<section class="contatti-form-wrapper">
 				<form id="contact-form" class="contact-form" novalidate>
 					<div class="field">
@@ -147,7 +145,6 @@ const pageDescription =
 
 		if (feedback) feedback.hidden = true;
 
-		// Validazione HTML5
 		if (!form.checkValidity()) {
 			form.reportValidity();
 			return;
@@ -199,14 +196,15 @@ const pageDescription =
 </script>
 
 <style>
+	/* === Layout base mobile-first === */
 	.contatti-content {
 		max-width: var(--wide-width);
 		margin: 0 auto;
-		padding: var(--spacing-16) var(--spacing-6);
+		padding: var(--spacing-6) var(--spacing-4) var(--spacing-12);
 	}
 
 	.contatti-header {
-		margin-bottom: var(--spacing-12);
+		margin-bottom: var(--spacing-8);
 		padding-bottom: var(--spacing-6);
 		border-bottom: 1px solid var(--color-border-subtle);
 	}
@@ -226,17 +224,17 @@ const pageDescription =
 		max-width: 60ch;
 	}
 
+	/* Default: 1 colonna su mobile */
 	.contatti-grid {
 		display: grid;
-		grid-template-columns: 1fr 2fr;
-		gap: var(--spacing-12);
+		grid-template-columns: 1fr;
+		gap: var(--spacing-8);
 		align-items: start;
 	}
 
 	/* === Colonna info === */
 	.contatti-info {
-		position: sticky;
-		top: var(--spacing-8);
+		position: static;
 	}
 
 	.info-title {
@@ -248,13 +246,13 @@ const pageDescription =
 	.info-tagline {
 		font-size: var(--font-size-sm);
 		color: var(--color-muted);
-		margin-bottom: var(--spacing-8);
+		margin-bottom: var(--spacing-6);
 	}
 
 	.info-list {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-6);
+		gap: var(--spacing-5);
 		margin: 0;
 	}
 
@@ -299,9 +297,10 @@ const pageDescription =
 		gap: var(--spacing-2);
 	}
 
+	/* Default: 1 colonna su mobile per email + telefono */
 	.field-row {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: 1fr;
 		gap: var(--spacing-5);
 	}
 
@@ -318,7 +317,7 @@ const pageDescription =
 	.field input,
 	.field textarea {
 		font-family: inherit;
-		font-size: var(--font-size-base);
+		font-size: 16px; /* iOS evita zoom automatico se >= 16px */
 		line-height: var(--leading-normal);
 		color: var(--color-text);
 		background: var(--color-surface);
@@ -326,10 +325,114 @@ const pageDescription =
 		border-radius: var(--radius);
 		padding: var(--spacing-3) var(--spacing-4);
 		transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+		width: 100%;
+		box-sizing: border-box;
 	}
 
 	.field input:focus,
 	.field textarea:focus {
 		outline: none;
 		border-color: var(--color-accent);
-		box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-acce
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent);
+	}
+
+	.field textarea {
+		resize: vertical;
+		min-height: 160px;
+	}
+
+	.form-footer {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-3);
+		margin-top: var(--spacing-2);
+	}
+
+	.btn-submit {
+		align-self: flex-start;
+		padding: var(--spacing-3) var(--spacing-8);
+		background: var(--color-accent);
+		color: var(--color-on-accent);
+		border: none;
+		border-radius: var(--radius);
+		font-family: inherit;
+		font-size: var(--font-size-base);
+		font-weight: 500;
+		cursor: pointer;
+		transition: background var(--transition-fast), transform var(--transition-fast);
+	}
+
+	.btn-submit:hover:not(:disabled) {
+		background: var(--color-accent-hover);
+	}
+
+	.btn-submit:active:not(:disabled) {
+		transform: translateY(1px);
+	}
+
+	.btn-submit:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.privacy-note {
+		font-size: var(--font-size-xs);
+		color: var(--color-muted);
+		line-height: var(--leading-relaxed);
+		margin: 0;
+	}
+
+	/* === Feedback === */
+	.form-feedback {
+		padding: var(--spacing-4);
+		border-radius: var(--radius);
+		font-size: var(--font-size-sm);
+		line-height: var(--leading-relaxed);
+		margin-top: var(--spacing-2);
+	}
+
+	.form-feedback.success {
+		background: color-mix(in srgb, #16a34a 10%, transparent);
+		color: #16a34a;
+		border: 1px solid color-mix(in srgb, #16a34a 30%, transparent);
+	}
+
+	.form-feedback.error {
+		background: color-mix(in srgb, #dc2626 10%, transparent);
+		color: #dc2626;
+		border: 1px solid color-mix(in srgb, #dc2626 30%, transparent);
+	}
+
+	/* === Desktop / Tablet largo === */
+	@media (min-width: 901px) {
+		.contatti-content {
+			padding: var(--spacing-16) var(--spacing-6);
+		}
+
+		.contatti-header {
+			margin-bottom: var(--spacing-12);
+		}
+
+		.contatti-grid {
+			grid-template-columns: 1fr 2fr;
+			gap: var(--spacing-12);
+		}
+
+		.contatti-info {
+			position: sticky;
+			top: var(--spacing-8);
+		}
+
+		.info-tagline {
+			margin-bottom: var(--spacing-8);
+		}
+
+		.info-list {
+			gap: var(--spacing-6);
+		}
+
+		.field-row {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>
